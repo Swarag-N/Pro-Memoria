@@ -1,0 +1,24 @@
+{
+  "name": "pro-memoria",
+  "version": "1.0.0",
+  "description": "Hey Something Helpful baking",
+  "main": "app.js",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.5",
+    "date-and-time": "^0.14.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Swarag-N/Pro-Memoria.git"
+  },
+  "author": "Swarag-N",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Swarag-N/Pro-Memoria/issues"
+  },
+  "homepage": "https://github.com/Swarag-N/Pro-Memoria#readme"
+}
