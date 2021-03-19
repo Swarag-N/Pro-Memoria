@@ -5,7 +5,9 @@
   "main": "app.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.5",
-    "date-and-time": "^0.14.2"
+    "date-and-time": "^0.14.2",
+    "express": "^4.17.1",
+    "http": "0.0.1-security"
   },
   "devDependencies": {},
   "scripts": {

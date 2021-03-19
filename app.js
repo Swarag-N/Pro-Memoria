@@ -1,5 +1,9 @@
 const fs = require("fs");
 const dt = require("date-and-time");
+var express=require("express")
+var app=express();
+
+
 
 let MILLISECS_PER_HOUR = 60 /* min/hour */ * 60 /* sec/min */ * 1000 /* ms/s */;
 let buff = new Date().getTime()
@@ -64,3 +68,10 @@ function getCurrentCourses(courses_json, slots_json, timebuffer) {
 // Minutes after any class??
 let timebuffer = 60 
 console.log(getCurrentCourses(courses_json,slots_json,timebuffer));
+
+//starting server
+var port = process.env.PORT || 3001;
+
+app.listen(port, function (){
+  console.log("Server Has Started!")
+});
