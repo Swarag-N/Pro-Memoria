@@ -5,11 +5,18 @@
   "main": "app.js",
   "dependencies": {
     "cheerio": "^1.0.0-rc.5",
-    "date-and-time": "^0.14.2"
+    "date-and-time": "^0.14.2",
+    "dotenv": "^8.2.0",
+    "telegraf": "^4.3.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "timekeeper": "^2.2.0"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "set NODE_ENV=development && node src/index.js",
+    "app": "node src/app.js",
+    "raw-test": "node src/test.js",
+    "test": "set NODE_ENV=test && node src/index.js"
   },
   "repository": {
     "type": "git",
