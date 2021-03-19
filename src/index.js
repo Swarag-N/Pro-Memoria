@@ -3,11 +3,13 @@ const { Telegraf } = require('telegraf')
 const {getCurrentCourses,formatMessage} = require('./helper');
 const result = require('dotenv').config()
 
-if (result.error) {
-  throw result.error
+if (process.env.NODE_ENV){
+  const result = require('dotenv').config()
+  
+  if (result.error) {
+    throw result.error
+  }
 }
-
-
 
 
 
