@@ -18,10 +18,10 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v2
 
-    - name: Use Node.js
-      uses: actions/setup-node@v1
-      with:
-        node-version:  13.x 
+      - name: Use Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version:  13.x 
 
       - name: Install Requirements
         run: npm ci
