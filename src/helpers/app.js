@@ -1,7 +1,7 @@
 const fs = require("fs");
 const dt = require("date-and-time");
-var express=require("express")
-var app=express();
+// var express=require("express")
+// var app=express();
 
 
 
@@ -69,9 +69,11 @@ function getCurrentCourses(courses_json, slots_json, timebuffer) {
 let timebuffer = 60 
 console.log(getCurrentCourses(courses_json,slots_json,timebuffer));
 
-//starting server
-var port = process.env.PORT || 3001;
+// //starting server
+// var port = process.env.PORT || 3001;
 
-app.listen(port, function (){
-  console.log("Server Has Started!")
-});
+// app.listen(port, function (){
+//   console.log("Server Has Started!")
+// });
+
+module.exports = { getCurrentCourses}
