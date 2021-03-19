@@ -1,0 +1,34 @@
+name: Reminder for Class
+
+on:
+  push:
+    branches:
+      - main
+      - static-bot
+  schedule: 
+    - cron:  '50 7-20 * * 1-5'
+# At minute 50 past every hour from 7 through 20 on every day-of-week from Monday through Friday.
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2
+
+    - name: Use Node.js
+      uses: actions/setup-node@v1
+      with:
+        node-version:  13.x 
+
+      - name: Install Requirements
+        run: npm ci
+
+      - name: Start BOT
+        run: npm run production
+        env:
+          TELEGRAM_BOT: ${{ secrets.TELEGRAM_BOT }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          COURSES: ${{ secrets.COURSES}}
