@@ -1,0 +1,182 @@
+<html>
+
+<head>
+    <title>Index</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.7.1.min.js"></script>
+
+    <style>
+        body{
+            background-color: #ffe0fe;
+            padding: 10px;
+        }
+        #ReadResult{
+            display: block;
+        }
+        .first{
+            margin-bottom: 10px;
+            width: 500px;
+        }
+        .second{
+            margin-top: 10px;
+            
+        }
+        .iframe{
+            border: 3px black solid;
+            width: 500px;
+        }
+        #button{
+            width: 200px;
+            height: 50px;
+            font-size: larger;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="first">
+        <label for="fileinput" class="form-label">Upload Time Table</label>
+        <input class="form-control form-control-lg" id="fileinput" type="file">
+    </div>
+    <!-- <div class="first"><input type="file" id="fileinput" /></div> -->
+    
+    <div class="iframe" id="ReadResult"> </div>
+    
+    <!-- <form id="myForm" action="/" method="POST">
+            <input type="text" id="lname" name="htmll">
+            <input type="submit" value="Submit form">
+        </form> -->
+
+    <div class="second"><input type="button" id="button" onclick="fun()" value="Submit form"></div>
+    <div class="second"><input type="button" onclick="download()" value="Download"></div>
+    <script type="text/javascript">
+        
+        function fun() {
+            return new Promise((resolve,reject)=>{
+            
+            let dataJSON = [];
+
+            // removes \t and \n between strings
+            let extremeTrim = (str) => {
+                str = str.replace(/\t/g, '');
+                str = str.replace(/\n/g, ' ');
+                return str;
+            }
+
+            // extracting course info
+            let third = (str) => {
+                let res = str.split("-");
+                // console.log(res);
+                return res;
+            };
+
+            // extracting slots
+            let eight = (str) => {
+                let res = str.split("+");
+                // Poping out Venue
+                last = res.pop()
+                res.push(last.split(" - ")[0])
+                // console.log(res)
+                return res;
+            };
+
+            // extracting credits info
+            let fourth = (str) => {
+                let res = str.split(' ');
+                return res;
+            }
+
+            // Parsing Starts here
+            let tableData = [], len = $('.table > tbody:nth-child(1) > tr').length - 2;
+            $('.table > tbody:nth-child(1) > tr').each((index, element) => {
+                if (index > 2 && index <= len) {
+                    let row = '.table > tbody:nth-child(1) > tr:nth-child(' + index + ') > td';
+                    let subData = [];
+                    $(row).each((subindex, subelement) => {
+                        subData.push(extremeTrim($(subelement).text().trim()));
+                    });
+                    tableData.push(subData);
+                }
+            });
+            console.log(tableData);
+
+            // saved tableData array converts to JSON here 
+            for (let i = 0; i < tableData.length; i++) {
+                let j = {}, creditSum = 0;
+                j.slot = eight(tableData[i][7]);
+                let courseInfo = third(tableData[i][2]);
+                console.log(courseInfo);
+                let type_want=courseInfo[1].split("(");
+                if(tableData[i][2].includes("Theory")){
+                    j.type = "Embedded Theory";
+                }
+                else if(tableData[i][2].includes("Project")){
+                    j.type = "Embedded Project";
+                }
+                else if(tableData[i][2].includes("Lab")){
+                    j.type="Embedded Lab";
+                }
+                else if(tableData[i][2].includes("Soft")){
+                    j.type="Soft Skills";
+                }
+                j.CCode = courseInfo[0];
+                j.CName = type_want[0].trim();
+                j.LTPJC = fourth(tableData[i][3]);
+                j.category = tableData[i][4];
+                let section=tableData[i][7].split("-");
+                j.classRoom = section[1].trim();
+                let firstname=tableData[i][8].split("-");
+                j.fName = firstname[0].trim();
+                creditSum += j.LTPJC;
+                dataJSON.push(j);
+            }
+            
+            console.log(dataJSON)
+            resolve(dataJSON);
+        });
+        }
+        function downloadObjectAsJson(exportObj, exportName){
+                    var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportObj));
+                    var downloadAnchorNode = document.createElement('a');
+                    downloadAnchorNode.setAttribute("href",     dataStr);
+                    downloadAnchorNode.setAttribute("download", exportName + ".json");
+                    document.body.appendChild(downloadAnchorNode); // required for firefox
+                    downloadAnchorNode.click();
+                    downloadAnchorNode.remove();
+                }
+        function download(){
+            fun()
+            .then((results)=>{
+                
+                downloadObjectAsJson(results,"harsha");
+            });
+        }
+        
+        function readSingleFile(evt) {
+            var f = evt.target.files[0];
+
+            if (f) {
+                var r = new FileReader();
+                r.onload = function (e) {
+                    var contents = e.target.result;
+                    console.log(contents);
+                    // document.getElementById('ReadResult').contentWindow.document.write(contents);
+                    document.getElementById("ReadResult").innerHTML = contents;
+                    document.getElementById("lname").value = contents.toString();
+
+
+
+
+                }
+                r.readAsText(f);
+            } else {
+                alert("Failed to load file");
+            }
+        }
+
+        document.getElementById('fileinput').addEventListener('change', readSingleFile, false);
+
+    </script>
+</body>
+
+</html>
