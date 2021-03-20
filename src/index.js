@@ -22,7 +22,7 @@ var BOT_API = process.env.TELEGRAM_BOT
 const courses = process.env.COURSES
 const CHAT_ID = process.env.CHAT_ID
 
-BOT_API='1443080989:AAFV55fIuxCO33CwEaBKLXWWMyKEzpNzE9c'
+// BOT_API='1443080989:AAFV55fIuxCO33CwEaBKLXWWMyKEzpNzE9c'
 const bot = new Telegraf(BOT_API)
 bot.start((ctx) => ctx.reply('Welcome'))
 bot.help((ctx) => ctx.reply('Send me a sticker'))
@@ -47,11 +47,11 @@ const calendar = new Calendar(bot, {
 });
 
 // listen for the selected date event
-var ourformat;
+
 calendar.setDateListener((context, date) => {
 	var format=date.split('-')
 	// ourformat=format[2]+':'+format[1]+':'+format[0];
-    ourformat=format[2]+'-'+format[1]+'-'+format[0];
+    var ourformat=format[2]+'-'+format[1]+'-'+format[0];
     console.log(ourformat)
     ourformat=ourformat.replace(/-/g, "\\-");
     console.log(ourformat)
@@ -90,7 +90,8 @@ bot.action("cf",(ctx)=>{
         carr.push(key)
     }
 	// console.log(carr)
-	cmp_sent="you added a assignment for "+ccode+" on "+ourformat;
+	// cmp_sent="you added a assignment for "+ccode+" on "+ourformat;
+    var cmp_sent="You added DA"
 	ctx.reply(cmp_sent);
 })
 // retreive the calendar HTML
@@ -127,9 +128,9 @@ bot.on('document',async (ctx)=>{
         //         throw Error("Please Try Again")
         //     }
         // });
-        const response = await axios.get(fileUrl.href);
+        const response = await axios.get(fileUrl);
         // const response=await axios.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`)
-        console.log(response)
+        // console.log(response)
         if(response.status===200 || statusText==="OK"){
             // let path='./data/users/'+ctx.from.username+".json"
             var data=JSON.stringify(response.data);
@@ -349,6 +350,7 @@ bot.on('callback_query',(ctx)=>{
         })
 
     }
+    
     else{
         ctx.reply("Hello Other than course code")
         // ctx.answerCbQuery("Hello")
