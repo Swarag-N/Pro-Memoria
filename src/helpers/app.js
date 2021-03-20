@@ -2,8 +2,8 @@ const fs = require("fs");
 const dt = require("date-and-time");
 // var express=require("express")
 // var app=express();
-
-if (process.env.NODE_ENV === "development"){
+console.log(process.env.NODE_ENV.length)
+if (process.env.NODE_ENV == "development "){
   let tk = require('timekeeper');
   // March 19 Sat 4:45
   console.log("In Testing")
@@ -85,4 +85,44 @@ let timebuffer = 60
 //   console.log("Server Has Started!")
 // });
 
-module.exports = { getCurrentCourses}
+function formatMessage(foundSlots){
+  let msg = " Hi \n"
+  // console.log(foundSlots)
+  foundSlots.forEach((foudSlot) => {
+    msg+=foudSlot.type
+    msg+="\n"
+    msg+=foudSlot.classRoom
+    msg+="\n\n\n"
+  });
+  return msg+"Happy Hacking"
+}
+
+
+function getAllCourseCodes(arr){
+
+    ccodes={}
+    for(var i=0;i<arr.length;i++){
+      
+      /*
+      ccode:{'name':Course name,'types':[]}
+      */
+      var type=arr[i].type.split("(")[arr[i].type.split("(").length-1].split(")")[0].trim()
+      var ccode=arr[i].CCode.trim()
+      var cname=arr[i].type.split("(")[0].trim()
+      if(ccodes[ccode]){
+        ccodes[ccode].types.push(type)
+      }
+      else{
+        ccodes[ccode]={
+          'name':cname,
+          'types':[type]
+        }
+      }
+
+    }
+    console.log(ccodes)
+    return ccodes
+}
+
+module.exports = {getCurrentCourses,formatMessage,getAllCourseCodes}
+
