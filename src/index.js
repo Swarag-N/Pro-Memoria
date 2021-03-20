@@ -1,9 +1,10 @@
 const fs = require("fs");
 const { Telegraf } = require('telegraf')
 const needle = require('needle');
+const axios = require('axios');
 const { json } = require("body-parser");
-// const {getCurrentCourses} = require('./helpers/app');
-
+const {getCurrentCourses} = require('./helpers/app');
+const pat=require('path')
 if (process.env.NODE_ENV){
   const result = require('dotenv').config()
   
@@ -26,7 +27,8 @@ bot.hears('hi', (ctx) => {
     ctx.reply('Hey there')
 })
 
-bot.on('document',(ctx)=>{
+bot.on('document',async (ctx)=>{
+    
     try {
         let fileData= (ctx.update.message.document)
         
@@ -35,33 +37,58 @@ bot.on('document',(ctx)=>{
         }
 
         console.group(ctx.from)
-
-        needle.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`, {output:"./apple.json"},function(error, response) {
-            if (!error && response.statusCode == 200){
-                data = JSON.parse(response.raw)
-                console.log(data)
-            }else{
-                throw Error("Please Try Again")
-            }
-        });
-        // {
-        //     file_name: 'output.json',
-        //     mime_type: 'application/json',
-        //     file_id: 'BQACAgUAAxkBAANJYFUgeN546mzmYROvVALLSxfDUdsAAscCAAJpb6hWFhZsF6Pok30eBA',
-        //     file_unique_id: 'AgADxwIAAmlvqFY',
-        //     file_size: 4613
-        //   }
-
-
+        const fileUrl = await ctx.telegram.getFileLink(fileData.file_id)
+        console.log(fileUrl)
+        // axios.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`,function(error, response) {
+        //     if (!error && response.statusCode == 200){
+        //         data = JSON.parse(response.raw)
+        //         console.log(data)
+        //     }else{
+        //         throw Error("Please Try Again")
+        //     }
+        // });
+        const response = await axios.get(fileUrl.href);
+        // const response=await axios.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`)
+        console.log(response)
+        if(response.status===200 || statusText==="OK"){
+            // let path='./data/users/'+ctx.from.username+".json"
+            var data=JSON.stringify(response.data);
+            fs.writeFileSync(pat.join(__dirname,"data/users",ctx.from.username+".json"),data)
+            
+        }
+        
         // fs.writeFileSync("./data/users/")
         // console.log(data)
-        ctx.reply("HII IIIIIIIIIIIII")
+        ctx.reply("Thank You File upload Done")
     } catch (error) {
         console.log(error)
         ctx.reply(error)
         
     }
 })
+
+bot.on('text', (ctx) => {
+    console.log("In getting hour")
+    console.log("MESSAGE",ctx.message.text)
+    console.log("USERNAME",ctx.from.username)
+    let path='./data/users/'+ctx.from.username+".json"
+    let courses = fs.readFileSync(pat.join(__dirname,"data/users",ctx.from.username+".json"))
+    let slots = fs.readFileSync(pat.join(__dirname,"data","slot.json"))
+
+    let courses_json = JSON.parse(courses);
+    let slots_json = JSON.parse(slots);
+    let buffer_time=ctx.message.text
+    console.log(parseInt(buffer_time))
+    // console.log(courses_json)
+    // console.log(slots.json)
+    let courses_notifying = getCurrentCourses(courses_json,slots_json,parseInt(buffer_time))
+    console.log(courses_notifying)
+
+  
+    // Using context shortcut
+    ctx.reply(`Hello`)
+  })
+  
 
 bot.launch()
 

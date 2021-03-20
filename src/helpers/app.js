@@ -3,6 +3,15 @@ const dt = require("date-and-time");
 // var express=require("express")
 // var app=express();
 
+if (process.env.NODE_ENV === "development"){
+  let tk = require('timekeeper');
+  // March 19 Sat 4:45
+  console.log("In Testing")
+  
+  let buf = new Date(2021,02,19,16,45)
+  let time = new Date(buf.getTime()); // January 1, 2030 00:00:00
+  tk.travel(time)
+}
 
 
 let MILLISECS_PER_HOUR = 60 /* min/hour */ * 60 /* sec/min */ * 1000 /* ms/s */;
@@ -12,11 +21,11 @@ let buff = new Date().getTime()
 let current_time = new Date(buff - MILLISECS_PER_HOUR*7);
 console.log(current_time.toString());
 
-let courses = fs.readFileSync("./output.json").toString();
-let slots = fs.readFileSync("./slot.json").toString();
+// let courses = fs.readFileSync("./output.json").toString();
+// let slots = fs.readFileSync("./slot.json").toString();
 
-let courses_json = JSON.parse(courses);
-let slots_json = JSON.parse(slots);
+// let courses_json = JSON.parse(courses);
+// let slots_json = JSON.parse(slots);
 
 function getSlotTime(slot) {
     let date = current_time.getDate();
@@ -29,7 +38,7 @@ function getSlotTime(slot) {
     return new Date(year, month, date, slot_hour, slot_minute);
 }
 
-function getCurrentCourses(courses_json, slots_json, timebuffer) {
+function getCurrentCourses(courses_json, slots_json, timebuffer=60) {
     let found_courses = [];
 
     let week_day = current_time.getDay();
@@ -67,7 +76,7 @@ function getCurrentCourses(courses_json, slots_json, timebuffer) {
 }
 // Minutes after any class??
 let timebuffer = 60 
-console.log(getCurrentCourses(courses_json,slots_json,timebuffer));
+// console.log(getCurrentCourses(courses_json,slots_json,timebuffer));
 
 // //starting server
 // var port = process.env.PORT || 3001;
