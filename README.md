@@ -5,7 +5,7 @@ Our project is based on an automated telegram bot system which gives remainders 
 Feature in Our Pro-Memoria Bot:
 
 Timely class reminders:
-On uploading the time-table Html to our WebSite we get a JSON file which can be very useful for multi-purposes in our project and on sending the JSON file to OUR Bot we can get the Timetable Scanned by Our Bot
+On uploading the time-table Html to our WebSite we get a JSON file which is very useful for multi-purposes in our project and on sending the JSON file to OUR Bot we can get the Timetable Scanned by Our Bot
 
 Digital Assignments reminder:
 We can get reminder set for our Assignments and can get the Reminder time to Time
