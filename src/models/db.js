@@ -1,5 +1,4 @@
-const mongoose = require('mongoose');
-
+const mongoose = require("mongoose");
 
 const DB_OPTIONS = {
     useNewUrlParser: true,
@@ -18,12 +17,16 @@ const DB_OPTIONS = {
 // });
 
 function connectToDB() {
-    mongoose.connect(process.env.DATABASE, {...DB_OPTIONS})
-    /* istanbul ignore next */
-        .catch((err)=>{
-          throw err;
+    mongoose
+        .connect(process.env.DATABASE, { ...DB_OPTIONS })
+        /* istanbul ignore next */
+        .catch((err) => {
+            throw err;
         });
 }
-  
-  
-module.exports = {connectToDB};
+
+function closeConnection() {
+    mongoose.connection.close();
+}
+
+module.exports = { connectToDB, closeConnection };

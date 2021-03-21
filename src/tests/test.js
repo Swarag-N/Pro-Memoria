@@ -87,7 +87,7 @@ function getRandomElemetofArray(arr) {
         for (let i = 0; i < 10; i++) {
             let u = getRandomElemetofArray(users);
             let subj = getRandomElemetofArray(subjects);
-            slot.set(`reg_users.${u._id}`, subj._id);
+            slot.set(`reg_users.${u.tid}`, subj._id);
         }
         slot.save();
     });

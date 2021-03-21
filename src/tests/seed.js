@@ -29,7 +29,7 @@ for (let i =0;i<10;i++){
         // SubjectNAme hehe
         name:faker.company.companyName(),
         fname:faker.name.firstName()+faker.name.lastName(),
-        venue:faker.random.word()
+        classRoom:faker.random.word()
     }
     users.push(tempUser)
     subjects.push(tempSubject)
@@ -54,7 +54,7 @@ Subject.insertMany(subjects,(err,data)=>{
     req_subj = data
 })
 
-let slots = []
+// let slots = []
 for(let j=0;j<3;j++){
     let tempSlot = {
         name:faker.name.firstName()
@@ -72,5 +72,9 @@ slots.forEach(slot=>{
       req_slots.push(data)
     })
 })
+
+// Slot.find({},(err,slot)=>{
+//     if (err) throw error
+// })
 
 

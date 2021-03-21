@@ -23,7 +23,8 @@
     "start": "set NODE_ENV=development && node ./src/index.js",
     "dev": "set NODE_ENV=development && nodemon ./src/index.js",
     "seed": "set NODE_ENV=development && node ./src/tests/seed.js",
-    "test": "set NODE_ENV=development && node ./src/tests/test.js"
+    "test": "set NODE_ENV=development && node ./src/tests/test.js",
+    "feed": "set NODE_ENV=development && node ./src/helpers/seedSlots.js"
   },
   "repository": {
     "type": "git",
