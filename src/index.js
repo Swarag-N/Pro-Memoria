@@ -9,14 +9,16 @@ const { MongoClient } = require('mongodb');
 // const session = require('telegraf-session-mongodb');
 const { TelegrafMongoSession } = require('telegraf-session-mongodb');
 
-const needle = require('needle');
 const axios = require('axios');
-const { json } = require("body-parser");
+const db = require('./models/db')
 const { getCurrentCourses, formatMessage, getAllCourseCodes } = require('./helpers/app');
+const {fileUpload,welcome} = require('./controllers/index')
+
+
 const pat = require('path')
 if (process.env.NODE_ENV) {
     const result = require('dotenv').config()
-
+    
     if (result.error) {
         throw result.error
     }
@@ -26,9 +28,14 @@ var BOT_API = process.env.TELEGRAM_BOT
 const courses = process.env.COURSES
 const CHAT_ID = process.env.CHAT_ID
 
-BOT_API = '1443080989:AAFV55fIuxCO33CwEaBKLXWWMyKEzpNzE9c'
+db.connectToDB()
+// BOT_API = '1443080989:AAFV55fIuxCO33CwEaBKLXWWMyKEzpNzE9c'
 const bot = new Telegraf(BOT_API)
-bot.start((ctx) => ctx.reply('Welcome'))
+// bot.start((ctx) => {
+//     return ctx.reply('Welcome')
+// })
+
+bot.start(welcome)
 bot.help((ctx) => ctx.reply('Send me a sticker'))
 bot.on('sticker', (ctx) => ctx.reply('👍'))
 bot.hears('hi', (ctx) => {
@@ -118,46 +125,9 @@ bot.action("calendar", context => {
 
     context.reply("Here you are", calendar.setMinDate(minDate).setMaxDate(maxDate).getCalendar())
 });
-//=====================================
 
-bot.on('document', async (ctx) => {
 
-    try {
-        let fileData = (ctx.update.message.document)
-
-        if (fileData.mime_type !== 'application/json') {
-            throw Error("Please Send a Valid File")
-        }
-
-        console.group(ctx.from)
-        const fileUrl = await ctx.telegram.getFileLink(fileData.file_id)
-        console.log(fileUrl)
-        // axios.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`,function(error, response) {
-        //     if (!error && response.statusCode == 200){
-        //         data = JSON.parse(response.raw)
-        //         console.log(data)
-        //     }else{
-        //         throw Error("Please Try Again")
-        //     }
-        // });
-        const response = await axios.get(fileUrl);
-        // const response=await axios.get(`https://api.telegram.org/bot${BOT_API}/getFile?file_id=${fileData.file_id}`)
-        // console.log(response)
-        if (response.status === 200 || statusText === "OK") {
-            // let path='./data/users/'+ctx.from.username+".json"
-            var data = JSON.stringify(response.data);
-            fs.writeFileSync(pat.join(__dirname, "data/users", ctx.from.id + ".json"), data)
-
-        }
-
-        ctx.reply("Thank You File upload Done")
-    } catch (error) {
-        console.log(error)
-        ctx.reply(error)
-
-    }
-})
-
+bot.on('document', fileUpload )
 // bot.on('text', (ctx) => {
 //     console.log("In getting hour")
 //     console.log("MESSAGE",ctx.message.text)
@@ -204,6 +174,7 @@ bot.hears('All classes in next T minutes', ctx => {
     ]).extra()
     ctx.reply('Select Time frame', inlineDaQuizKeyboard)
 })
+
 const timeframes = ['15', '30', '45', '60']
 bot.action(timeframes, (ctx) => {
     console.log(ctx.match)
