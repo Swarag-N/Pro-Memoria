@@ -12,7 +12,10 @@ const slotSchema = new mongoose.Schema({
     // },
     reg_users: {
         type: Map,
-        of: String,
+        of: {
+            type:'ObjectID',
+            ref:'Subject'
+        },
         // of: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     },
 });

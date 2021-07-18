@@ -1,5 +1,4 @@
 const dt = require("date-and-time");
-const mongoose = require("mongoose");
 const Slot = require("../models/Slot");
 const SlotTime = require("../models/SlotTime");
 const { getNumberTime } = require("./index");
@@ -29,29 +28,34 @@ function getSlotsfromTimeSlots(time_slots) {
 }
 
 function getSubjectiffound(slots, tid) {
-    
     let found_subj = null;
-    let flag = slots.some( (slot) => {
-        let subj = slot.get(`reg_users.${tid}`)
+    // TODO returns only one class should collect more classes to
+    let flag = slots.some((slot) => {
+        let subj = slot.get(`reg_users.${tid}`);
         if (subj) {
-            found_subj = subj 
+            found_subj = subj;
             return true;
         }
         return false;
     });
 
-    return (flag,found_subj)
-    
-    // slots.forEach(async (slot) => {
-
-    //     subj = await slot.get(`reg_users.${tid}`);
-    //     console.log(slot.name, subj, "match", Boolean(subj));
-    //     if (subj) {
-    //         flag = true;
-    //         break;
-    //     }
-    // });
-    // return flag, subj;
+    return flag, found_subj;
 }
 
-module.exports = { getTimeSlots, getSlotsfromTimeSlots, getSubjectiffound };
+function getUsersTobeNotified(time_slots) {
+    let dense = time_slots.map((time_slot) => {
+        return time_slot.slots_in_time;
+    });
+
+    let allSlots = [].concat(...dense);
+    return Slot.find({ _id: { $in: allSlots } })
+        .populate("reg_users.$*")
+        .lean();
+}
+
+module.exports = {
+    getTimeSlots,
+    getSlotsfromTimeSlots,
+    getSubjectiffound,
+    getUsersTobeNotified,
+};

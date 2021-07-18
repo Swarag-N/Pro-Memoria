@@ -1,5 +1,6 @@
 const fs = require("fs");
 const Telegraf = require("telegraf");
+const cron = require("node-cron");
 
 const Markup = require("telegraf/markup");
 const Extra = require("telegraf/extra");
@@ -26,7 +27,7 @@ if (process.env.NODE_ENV == "development ") {
     let buf = new Date(2021, 02, 19, 16, 45);
     let time = new Date(buf.getTime()); // January 1, 2030 00:00:00
     tk.travel(time);
-    console.log(new Date().toTimeString())
+    console.log(new Date().toTimeString());
 }
 
 const pat = require("path");
@@ -185,57 +186,8 @@ bot.on("document", fileUpload);
 
 bot.command("keyboard", addKeyBoard);
 bot.hears("All classes in next T minutes", buffTimeSelctionkeyboard);
-
 const TIMEFRAMES = ["15", "30", "45", "60"];
-
 bot.action(TIMEFRAMES, classInNextTMin);
-// bot.action(TIMEFRAMES, (ctx) => {
-//     // console.log(ctx.match)
-//     var buffer_time = ctx.match
-//     console.log("USERNAME", ctx.from.username)
-//     // let path='./data/users/'+ctx.from.username+".json"
-//     try {
-//         let courses = fs.readFileSync(pat.join(__dirname, "data/users", ctx.from.id + ".json"))
-//         let courses_json = JSON.parse(courses);
-//         let slots = fs.readFileSync(pat.join(__dirname, "data", "slot.json"))
-
-//         let slots_json = JSON.parse(slots);
-
-//         console.log(parseInt(buffer_time))
-
-//         let courses_notifying = getCurrentCourses(courses_json, slots_json, parseInt(buffer_time))
-//         console.log(courses_notifying)
-//         let msg = formatMessage(courses_notifying)
-//         console.log(msg)
-//         msg = msg.replace("_", "\\_")
-//             .replace("*", "\\*")
-//             .replace("-", "\\-")
-//             .replace("`", "\\`")
-//             .replace("(", "\\(")
-//             .replace(")", "\\)");
-//         ctx.deleteMessage();
-//         ctx.reply(msg, {
-//             parse_mode: 'MarkdownV2',
-//             // reply_markup: inlineCourseKeyboard
-//             reply_markup: {
-//                 inline_keyboard: [[{
-//                     text: 'Back',
-//                     callback_data: 'back'
-//                 },
-//                     // {
-//                     // 	text:'Confirm',
-//                     // 	callback_data:'confirm'
-//                     // }
-//                 ]]
-//             }
-//         })
-//     }
-//     catch (err) {
-//         console.log(err)
-//         throw err
-//     }
-
-// })
 
 bot.action("back", (ctx) => {
     const inlineDaQuizKeyboard = Markup.inlineKeyboard([

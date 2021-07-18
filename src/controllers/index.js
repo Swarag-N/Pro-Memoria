@@ -55,10 +55,13 @@ async function fileUpload(ctx) {
             msg = "You'r Data is Added";
             // }
             let subjs = JSON.parse(data);
+            let slots_added = []
             subjs.forEach(async (subj) => {
-                await addSubject(subj, ctx.from.id);
+                let temp_slot =  await addSubject(subj, ctx.from.id);
+                console.log(temp_slot)
+                slots_added.push(...temp_slot)
             });
-            console.log(typeof data);
+            console.log(slots_added,"******************");
 
             // fs.writeFileSync(filePath, data)
         }

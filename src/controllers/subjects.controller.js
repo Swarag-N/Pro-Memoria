@@ -27,7 +27,7 @@ async function addSubject(subject, user_tid) {
         });
 
     let lower_slots = slot.map((s) => s.toLowerCase());
-    let allSlots = [].concat(...lower_slots)
+    let allSlots = await [].concat(...lower_slots);
     let req_slots = await Slot.find({ name: { $in: allSlots } })
         .exec()
         .then((slots) => {
@@ -38,11 +38,14 @@ async function addSubject(subject, user_tid) {
             throw err;
         });
 
+    let slots_in_which_data_added = [];
     req_slots.forEach(async (foundSlot) => {
-        console.log(req_slots);
         await foundSlot.set(`reg_users.${user_tid}`, newSubj._id);
         await foundSlot.save();
+        await slots_in_which_data_added.push(foundSlot.name)
     });
+    console.log(slots_in_which_data_added);
+    return slots_in_which_data_added;
 }
 
 module.exports = { addSubject };
