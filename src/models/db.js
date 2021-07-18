@@ -1,10 +1,10 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
 const DB_OPTIONS = {
-    useNewUrlParser: true,
-    useFindAndModify: false,
-    useCreateIndex: true,
-    useUnifiedTopology: true,
+  useNewUrlParser: true,
+  useFindAndModify: false,
+  useCreateIndex: true,
+  useUnifiedTopology: true,
 };
 
 // mongoose.connect('mongodb://localhost/test', {useNewUrlParser: true, useUnifiedTopology: true});
@@ -17,16 +17,16 @@ const DB_OPTIONS = {
 // });
 
 function connectToDB() {
-    mongoose
-        .connect(process.env.DATABASE, { ...DB_OPTIONS })
-        /* istanbul ignore next */
-        .catch((err) => {
-            throw err;
-        });
+  mongoose
+    .connect(process.env.DATABASE, { ...DB_OPTIONS })
+  /* istanbul ignore next */
+    .catch((err) => {
+      throw err;
+    });
 }
 
 function closeConnection() {
-    mongoose.connection.close();
+  mongoose.connection.close();
 }
 
 module.exports = { connectToDB, closeConnection };

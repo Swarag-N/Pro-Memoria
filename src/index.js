@@ -1,28 +1,25 @@
 const fs = require("fs");
-const Telegraf = require("telegraf");
-const cron = require("node-cron");
+const pat = require("path");
 
-const Markup = require("telegraf/markup");
-const Extra = require("telegraf/extra");
-var Calendar = require("telegraf-calendar-telegram");
+const { Telegraf, Markup } = require('telegraf')
+const Calendar = require("telegraf-calendar-telegram");
 
 const { MongoClient } = require("mongodb");
-// const session = require('telegraf-session-mongodb');
-const { TelegrafMongoSession } = require("telegraf-session-mongodb");
+const { session } = require("telegraf-session-mongodb");
 
-const axios = require("axios");
+
 const db = require("./models/db");
 const {
     getCurrentCourses,
     formatMessage,
     getAllCourseCodes,
 } = require("./helpers/app");
+
 const { welcome, fileUpload, classInNextTMin } = require("./controllers/index");
 const { addKeyBoard, buffTimeSelctionkeyboard } = require("./bot");
 
 if (process.env.NODE_ENV == "development ") {
     let tk = require("timekeeper");
-    // March 19 Sat 4:45
     console.log("In Testing");
     let buf = new Date(2021, 02, 19, 16, 45);
     let time = new Date(buf.getTime()); // January 1, 2030 00:00:00
@@ -30,7 +27,6 @@ if (process.env.NODE_ENV == "development ") {
     console.log(new Date().toTimeString());
 }
 
-const pat = require("path");
 if (process.env.NODE_ENV) {
     const result = require("dotenv").config();
 
@@ -44,11 +40,7 @@ const courses = process.env.COURSES;
 const CHAT_ID = process.env.CHAT_ID;
 
 db.connectToDB();
-// BOT_API = '1443080989:AAFV55fIuxCO33CwEaBKLXWWMyKEzpNzE9c'
 const bot = new Telegraf(BOT_API);
-// bot.start((ctx) => {
-//     return ctx.reply('Welcome')
-// })
 
 bot.start(welcome);
 bot.help((ctx) => ctx.reply("Send me a sticker"));
@@ -58,17 +50,14 @@ bot.hears("hi", (ctx) => {
     ctx.reply("Hey there");
 });
 
-// MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true })
-//   .then(client => {
-//     const db = client.db();
-//     bot.use(session(db, { collectionName: 'sessions' }));
-// });
-TelegrafMongoSession.setup(bot, process.env.DATABASE, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-})
-    .then((client) => bot.launch())
-    .catch((err) => console.log(`Failed to connect to the database: ${err}`));
+
+
+MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(client => {
+        const db = client.db();
+        bot.use(session(db, { collectionName: 'sessions' }));
+        bot.launch()
+    });
 //====================================
 
 // instantiate the calendar
@@ -308,7 +297,7 @@ bot.on("callback_query", (ctx) => {
     }
 });
 
-bot.launch();
+// bot.launch();
 
 function courses_keyboard(courses) {
     var arr = [];
