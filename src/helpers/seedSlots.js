@@ -48,13 +48,8 @@ allSlots.forEach(async (slot) => {
     { upsert: true, new: true },
   )
     .exec()
-    .then((slot_time) => {
-      console.log('1');
-      return slot_time;
-    })
+    .then((slot_time) => slot_time)
     .catch((err) => {
       throw err;
     });
 });
-// let current_day = SlotTime.findOrCreate()
-// });

@@ -1,9 +1,7 @@
 const fs = require("fs");
 const pat = require("path");
 
-const { Telegraf, Markup } = require('telegraf')
-const Calendar = require("telegraf-calendar-telegram");
-
+const { Telegraf, Markup, } = require('telegraf')
 const { MongoClient } = require("mongodb");
 const { session } = require("telegraf-session-mongodb");
 
@@ -15,8 +13,10 @@ const {
     getAllCourseCodes,
 } = require("./helpers/app");
 
-const { welcome, fileUpload, classInNextTMin } = require("./controllers/index");
+const { welcome, classInNextTMin } = require("./controllers/index");
+const fileUpload = require('./handlers/fileHandler')
 const { addKeyBoard, buffTimeSelctionkeyboard } = require("./bot");
+const { TIMEFRAMES } = require('./bot/VALUES')
 
 if (process.env.NODE_ENV == "development ") {
     let tk = require("timekeeper");
@@ -35,9 +35,8 @@ if (process.env.NODE_ENV) {
     }
 }
 
-var BOT_API = process.env.TELEGRAM_BOT;
-const courses = process.env.COURSES;
-const CHAT_ID = process.env.CHAT_ID;
+const BOT_API = process.env.TELEGRAM_BOT;
+
 
 db.connectToDB();
 const bot = new Telegraf(BOT_API);
@@ -46,11 +45,9 @@ bot.start(welcome);
 bot.help((ctx) => ctx.reply("Send me a sticker"));
 bot.on("sticker", (ctx) => ctx.reply("👍"));
 bot.hears("hi", (ctx) => {
-    console.group(ctx.from);
     ctx.reply("Hey there");
 });
-
-
+bot.on("document", fileUpload);
 
 MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTopology: true })
     .then(client => {
@@ -58,64 +55,13 @@ MongoClient.connect(process.env.DATABASE, { useNewUrlParser: true, useUnifiedTop
         bot.use(session(db, { collectionName: 'sessions' }));
         bot.launch()
     });
-//====================================
 
-// instantiate the calendar
-const calendar = new Calendar(bot, {
-    startWeekDay: 0,
-    weekDayNames: ["S", "M", "T", "W", "T", "F", "S"],
-    monthNames: [
-        "Jan",
-        "Feb",
-        "Mar",
-        "Apr",
-        "May",
-        "Jun",
-        "Jul",
-        "Aug",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Dec",
-    ],
-    minDate: null,
-    maxDate: null,
-});
 
-// listen for the selected date event
-
-calendar.setDateListener((context, date) => {
-    var format = date.split("-");
-    // ourformat=format[2]+':'+format[1]+':'+format[0];
-    var ourformat = format[2] + "-" + format[1] + "-" + format[0];
-    console.log(ourformat);
-    ourformat = ourformat.replace(/-/g, "\\-");
-    console.log(ourformat);
-    context.session.ourformat = ourformat;
-    context.reply(ourformat, {
-        parse_mode: "MarkdownV2",
-        // reply_markup: inlineCourseKeyboard
-        reply_markup: {
-            inline_keyboard: [
-                [
-                    {
-                        text: "Back",
-                        callback_data: "bk",
-                    },
-                    {
-                        text: "Confirm",
-                        callback_data: "cf",
-                    },
-                ],
-            ],
-        },
-    });
-});
 bot.action("bk", (ctx) => {
     const inlineDaQuizKeyboard = Markup.inlineKeyboard([
-        Markup.callbackButton("DA", "da"),
-        Markup.callbackButton("QUIZ", "quiz"),
-    ]).extra();
+        Markup.button.callback("DA", "da"),
+        Markup.button.callback("QUIZ", "quiz"),
+    ]);
     ctx.reply("Select DA or QUIZ", inlineDaQuizKeyboard);
 });
 
@@ -135,22 +81,10 @@ bot.action("cf", (ctx) => {
     var cmp_sent = `You added Da on ${ctx.session.ourformat} for Course ${cname}`;
     ctx.reply(cmp_sent);
 });
-// retreive the calendar HTML
-bot.action("calendar", (context) => {
-    const today = new Date();
-    const minDate = new Date();
-    minDate.setMonth(today.getMonth() - 2);
-    const maxDate = new Date();
-    maxDate.setMonth(today.getMonth() + 2);
-    maxDate.setDate(today.getDate());
 
-    context.reply(
-        "Here you are",
-        calendar.setMinDate(minDate).setMaxDate(maxDate).getCalendar()
-    );
-});
 
-bot.on("document", fileUpload);
+
+
 // bot.on('text', (ctx) => {
 //     console.log("In getting hour")
 //     console.log("MESSAGE",ctx.message.text)
@@ -175,15 +109,15 @@ bot.on("document", fileUpload);
 
 bot.command("keyboard", addKeyBoard);
 bot.hears("All classes in next T minutes", buffTimeSelctionkeyboard);
-const TIMEFRAMES = ["15", "30", "45", "60"];
+
 bot.action(TIMEFRAMES, classInNextTMin);
 
 bot.action("back", (ctx) => {
     const inlineDaQuizKeyboard = Markup.inlineKeyboard([
-        Markup.callbackButton("15 min", "15"),
-        Markup.callbackButton("30 min", "30"),
-        Markup.callbackButton("45 min", "30"),
-        Markup.callbackButton("1 hour", "60"),
+        Markup.button.callback("15 min", "15"),
+        Markup.button.callback("30 min", "30"),
+        Markup.button.callback("45 min", "30"),
+        Markup.button.callback("1 hour", "60"),
     ]).extra();
     ctx.reply("Select Time frame", inlineDaQuizKeyboard);
 });
@@ -196,9 +130,9 @@ bot.action("back", (ctx) => {
 bot.hears("Add Assign/Quiz", (ctx) => {
     // Inline Keyboard with Quiz and DA
     const inlineDaQuizKeyboard = Markup.inlineKeyboard([
-        Markup.callbackButton("DA", "da"),
-        Markup.callbackButton("QUIZ", "quiz"),
-    ]).extra();
+        Markup.button.callback("DA", "da"),
+        Markup.button.callback("QUIZ", "quiz"),
+    ]);
     ctx.reply("Select DA or QUIZ", inlineDaQuizKeyboard);
 });
 
@@ -227,34 +161,7 @@ bot.action("da", (ctx) => {
     });
 });
 
-// bot.action(carr,(ctx)=>{
-// 	// console.log(ctx)
-// 	console.log(ctx.match)
-// 	ccode=ctx.match
-//     courses_read = fs.readFileSync(pat.join(__dirname,"data/users",ctx.from.id+".json"))
 
-//     course_json = JSON.parse(courses_read);
-//     cobj=getAllCourseCodes(course_json);
-//     // carr=[];
-//     for (const [key, value] of Object.entries(cobj)) {
-//         console.log(`${key}: ${value}`);
-//         carr.push(key)
-//     }
-// 	console.log(carr)
-
-//     console.log(cobj)
-
-// 	ctx.editMessageText('Select Deadline For your Assignment',{
-// 		parse_mode: 'MarkdownV2',
-// 		// reply_markup: inlineCourseKeyboard
-// 		reply_markup:{
-// 			inline_keyboard:[[{
-//                 text:'Select Date',
-//                 callback_data:'calendar'
-//             }]]
-// 		}
-// 	})
-// })
 
 bot.on("callback_query", (ctx) => {
     console.log(ctx);

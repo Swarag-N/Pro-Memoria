@@ -8,19 +8,18 @@ function addKeyBoard({ reply }) {
       ['All classes in next T minutes'], // Row2 with 2 buttons
     ])
       .oneTime()
-      .resize()
-      .extra(),
+      .resize(),
   );
 }
 
 function buffTimeSelctionkeyboard(ctx) {
   // Inline Keyboard with Quiz and DA
   const inlineDaQuizKeyboard = Markup.inlineKeyboard([
-    Markup.callbackButton('15 min', '15'),
-    Markup.callbackButton('30 min', '30'),
-    Markup.callbackButton('45 min', '30'),
-    Markup.callbackButton('1 hour', '60'),
-  ]).extra();
+    Markup.button.callback('15 min', '15'),
+    Markup.button.callback('30 min', '30'),
+    Markup.button.callback('45 min', '30'),
+    Markup.button.callback('1 hour', '60'),
+  ]);
   ctx.reply('Select Time frame', inlineDaQuizKeyboard);
 }
 
